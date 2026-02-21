@@ -1,0 +1,161 @@
+{
+  "name": "promptarmor-advisor",
+  "displayName": "PromptArmor Advisor",
+  "description": "Detects prompt engineering patterns and provides security recommendations for LLM-based applications in cybersecurity contexts.",
+  "version": "1.0.0",
+  "publisher": "promptarmor",
+  "icon": "resources/icon.png",
+  "galleryBanner": {
+    "color": "#1a1a2e",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "prompt",
+    "security",
+    "llm",
+    "injection",
+    "cybersecurity",
+    "guardrails",
+    "ai",
+    "openai",
+    "prompt-injection"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "promptarmor.scan",
+        "title": "PromptArmor: Scan for Prompt Patterns"
+      },
+      {
+        "command": "promptarmor.aggressiveScan",
+        "title": "PromptArmor: Aggressive Scan Workspace"
+      },
+      {
+        "command": "promptarmor.configure",
+        "title": "PromptArmor: Open Settings"
+      },
+      {
+        "command": "promptarmor.toggleAggressiveness",
+        "title": "PromptArmor: Toggle Aggressiveness Level"
+      },
+      {
+        "command": "promptarmor.gitPreCommitScan",
+        "title": "PromptArmor: Pre-Commit Scan"
+      },
+      {
+        "command": "promptarmor.setupGitHooks",
+        "title": "PromptArmor: Setup Git Hooks"
+      },
+      {
+        "command": "promptarmor.exportScanResults",
+        "title": "PromptArmor: Export Scan Results as JSON"
+      }
+    ],
+    "configuration": {
+      "title": "PromptArmor Advisor",
+      "properties": {
+        "promptarmor.aggressiveness": {
+          "type": "string",
+          "default": "default",
+          "enum": [
+            "low",
+            "default",
+            "high"
+          ],
+          "enumDescriptions": [
+            "Scans on save only, minimal notifications",
+            "Scans on save and edit, standard notifications",
+            "Scans on every keystroke (debounced), modal warnings, persistent notifications"
+          ],
+          "description": "Controls how aggressively the extension alerts you to prompt vulnerabilities."
+        },
+        "promptarmor.sensitivity": {
+          "type": "string",
+          "default": "medium",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "description": "Detection sensitivity for prompt patterns. Higher = more detections, more false positives."
+        },
+        "promptarmor.customKeywords": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional keywords to detect as prompt-related code."
+        },
+        "promptarmor.excludedFileTypes": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "File extensions to exclude from scanning (e.g., '.md', '.txt')."
+        },
+        "promptarmor.enableGitCommitGuard": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable git commit integration to warn/block commits with unresolved prompt vulnerabilities."
+        },
+        "promptarmor.enableTelemetry": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable anonymous telemetry for usage statistics."
+        },
+        "promptarmor.maxInputLength": {
+          "type": "number",
+          "default": 2000,
+          "description": "Recommended max input length for user prompts (used in input validation suggestions)."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "promptarmor",
+          "title": "PromptArmor Advisor",
+          "icon": "resources/shield.svg"
+        }
+      ]
+    },
+    "views": {
+      "promptarmor": [
+        {
+          "type": "webview",
+          "id": "promptarmor.sidePanel",
+          "name": "PromptArmor Advisor"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.3.0"
+  }
+}
