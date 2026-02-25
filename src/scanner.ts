@@ -25,6 +25,26 @@ export class Scanner {
     }
 
     /**
+     * Default allowlist of known-safe namespace prefixes that should never be
+     * flagged as LLM API calls (e.g. VS Code Extension API data classes).
+     */
+    private static readonly DEFAULT_SAFE_NAMESPACES: string[] = [
+        'vscode.',
+        'Buffer.',
+        'URL.',
+        'EventEmitter.',
+    ];
+
+    /**
+     * Return true if the matched text contains a known-safe namespace/package
+     * that should be excluded from LLM-related findings.
+     */
+    private isSafeMatch(matchedText: string, safeNamespaces: string[]): boolean {
+        const lower = matchedText.toLowerCase();
+        return safeNamespaces.some(ns => lower.includes(ns.toLowerCase()));
+    }
+
+    /**
      * Scan a document and return all detected prompt issues
      */
     public scan(document: vscode.TextDocument): PromptIssue[] {
@@ -32,6 +52,8 @@ export class Scanner {
         const sensitivity: string = config.get('sensitivity', 'medium');
         const customKeywords: string[] = config.get('customKeywords', []);
         const excludedFileTypes: string[] = config.get('excludedFileTypes', []);
+        const userSafeNamespaces: string[] = config.get('safeApiNamespaces', []);
+        const safeNamespaces = [...Scanner.DEFAULT_SAFE_NAMESPACES, ...userSafeNamespaces];
         const languageId = document.languageId;
 
         // Check excluded file types
@@ -67,6 +89,12 @@ export class Scanner {
             let match: RegExpExecArray | null;
 
             while ((match = regex.exec(text)) !== null) {
+                // Skip matches that contain a known-safe namespace (e.g. vscode.*)
+                if (this.isSafeMatch(match[0], safeNamespaces)) {
+                    if (match[0].length === 0) { regex.lastIndex++; }
+                    continue;
+                }
+
                 const startPos = document.positionAt(match.index);
                 const endPos = document.positionAt(match.index + match[0].length);
                 const range = new vscode.Range(startPos, endPos);
