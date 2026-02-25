@@ -69,7 +69,7 @@ def call_anthropic(user_id: str, prompt: str):
     },
     // LLM API call in a loop without throttle
     {
-        regex: /(?:for|while|forEach|map)\s*[\(\{][\s\S]{0,300}(?:openai|anthropic|completion|chat\.create|messages\.create)/gi,
+        regex: /(?:for|while|forEach|map)\s*[\(\{][\s\S]{0,300}(?:openai|anthropic|\.completions\.create|chat\.completions|ChatCompletion|messages\.create|generateContent)/gi,
         message: 'LLM API call inside a loop detected. High risk of rate limit exhaustion and cost explosion.',
         severity: PromptSeverity.Critical,
         category: PromptCategory.RateLimiting,

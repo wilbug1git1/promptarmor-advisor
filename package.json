@@ -125,6 +125,14 @@
           "type": "number",
           "default": 2000,
           "description": "Recommended max input length for user prompts (used in input validation suggestions)."
+        },
+        "promptarmor.safeApiNamespaces": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional namespace/package prefixes to treat as known-safe (never flagged as LLM API calls). Built-in safe namespaces include 'vscode.', 'Buffer.', 'URL.', 'EventEmitter.'."
         }
       }
     },
