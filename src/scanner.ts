@@ -95,6 +95,23 @@ export class Scanner {
                     continue;
                 }
 
+                // Suppress if the surrounding context already contains role-locking phrases
+                if (pattern.suppressIfContext && pattern.suppressIfContext.length > 0) {
+                    const matchLine = document.positionAt(match.index).line;
+                    const contextStart = Math.max(0, matchLine - 10);
+                    const contextEnd = Math.min(document.lineCount - 1, matchLine + 10);
+                    let contextText = '';
+                    for (let ln = contextStart; ln <= contextEnd; ln++) {
+                        contextText += document.lineAt(ln).text + '\n';
+                    }
+                    const contextLower = contextText.toLowerCase();
+                    const lowerPhrases = pattern.suppressIfContext.map(p => p.toLowerCase());
+                    if (lowerPhrases.some(phrase => contextLower.includes(phrase))) {
+                        if (match[0].length === 0) { regex.lastIndex++; }
+                        continue;
+                    }
+                }
+
                 const startPos = document.positionAt(match.index);
                 const endPos = document.positionAt(match.index + match[0].length);
                 const range = new vscode.Range(startPos, endPos);
