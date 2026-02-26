@@ -53,4 +53,10 @@ export interface DetectionPattern {
     languages?: string[];
     /** Minimum sensitivity to trigger ('low' triggers always, 'high' only on high sensitivity) */
     minSensitivity?: 'low' | 'medium' | 'high';
+    /**
+     * If any of these strings are found (case-insensitive) within ±10 lines of the
+     * match, the diagnostic is suppressed.  Use this to avoid false positives when
+     * role-locking / anti-injection text is already present near the matched line.
+     */
+    suppressIfContext?: string[];
 }
